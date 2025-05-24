@@ -1,4 +1,4 @@
-package ru.haritonova.saturday10.presentation.goods.theme
+package ru.haritonova.saturday10.presentation.theme
 
 import androidx.compose.ui.graphics.Color
 

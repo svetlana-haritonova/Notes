@@ -2,25 +2,19 @@ package ru.haritonova.saturday10
 
 import android.app.Application
 import androidx.room.Room
-import ru.haritonova.saturday10.data.db.UsersDatabase
-
+import ru.haritonova.saturday10.data.db.NotesDatabase
 
 class App : Application() {
+  companion object {
+    lateinit var db: NotesDatabase
+  }
+
   override fun onCreate() {
     super.onCreate()
     db = Room.databaseBuilder(
       applicationContext,
-      UsersDatabase::class.java,
-      "user-db"
-    )
-      .allowMainThreadQueries()
-      .build()
-  }
-
-  companion object {
-    var db: UsersDatabase? = null
-    fun getDatabase(): UsersDatabase? {
-      return db
-    }
+      NotesDatabase::class.java,
+      "notes-db"
+    ).allowMainThreadQueries().build()
   }
 }

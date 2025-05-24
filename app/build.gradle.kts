@@ -58,6 +58,7 @@ dependencies {
   implementation(libs.androidx.ui.graphics)
   implementation(libs.androidx.ui.tooling.preview)
   implementation(libs.androidx.material3)
+  implementation("androidx.room:room-ktx:2.6.1")
 
   implementation(libs.androidx.lifecycle.viewmodel.compose)
   implementation(libs.glide)
@@ -66,6 +67,7 @@ dependencies {
   implementation(libs.gson)
   implementation(libs.converter.gson)
   implementation(libs.logging.interceptor)
+
 
   implementation(libs.coreDestinations)
   ksp(libs.composeDestinationsKSP)
@@ -81,4 +83,5 @@ dependencies {
   androidTestImplementation(libs.androidx.ui.test.junit4)
   debugImplementation(libs.androidx.ui.tooling)
   debugImplementation(libs.androidx.ui.test.manifest)
+
 }
