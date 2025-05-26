@@ -3,7 +3,6 @@ package ru.haritonova.saturday10
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import ru.haritonova.saturday10.data.db.NotesDatabase
 import ru.haritonova.saturday10.presentation.model.Note
 import ru.haritonova.saturday10.presentation.viewmodel.NotesViewModel
 import ru.haritonova.saturday10.presentation.screen.NoteListScreen
@@ -15,7 +14,7 @@ class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    val db = NotesDatabase.getDatabase(this)
+    val db = App.db
     val repository = NotesRepository(db.noteDao())
     val viewModel = NotesViewModel(repository)
 
