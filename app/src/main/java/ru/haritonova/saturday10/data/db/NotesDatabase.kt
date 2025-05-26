@@ -1,39 +1,51 @@
 package ru.haritonova.saturday10.data.db
 
 import android.content.Context
-import androidx.room.Dao
-import androidx.room.Database
-import androidx.room.Delete
-import androidx.room.Entity
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.PrimaryKey
-import androidx.room.Query
+import androidx.room.*
+import androidx.room.Room
 import androidx.room.RoomDatabase
+import ru.haritonova.saturday10.presentation.model.Note
 
 @Database(entities = [NoteEntity::class], version = 1)
 abstract class NotesDatabase : RoomDatabase() {
     abstract fun noteDao(): NoteDao
+
+    companion object {
+        private var INSTANCE: NotesDatabase? = null
+
+        fun getDatabase(context: Context): NotesDatabase {
+            if (INSTANCE == null) {
+                INSTANCE = Room.databaseBuilder(
+                    context.applicationContext,
+                    NotesDatabase::class.java,
+                    "note_database"
+                ).build()
+            }
+            return INSTANCE!!
+        }
+    }
 }
 
 @Dao
 interface NoteDao {
-    @Query("SELECT * FROM notes")
-    suspend fun getAll(): List<NoteEntity>
+    @Query("SELECT * FROM notes ORDER BY time DESC")
+    suspend fun getAllNotes(): List<NoteEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(note: NoteEntity)
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAll(notes: List<NoteEntity>)
+    suspend fun insertNote(note: NoteEntity)
 
     @Delete
-    suspend fun delete(note: NoteEntity)
+    suspend fun deleteNote(note: NoteEntity)
 }
 
 @Entity(tableName = "notes")
 data class NoteEntity(
-    @PrimaryKey val id: String,
+    @PrimaryKey(autoGenerate = true)
+    val id: Int,
     val title: String,
-    val text: String
+    val text: String,
+    val time: Long
 )
+
+fun NoteEntity.toNote() = Note(id, title, text, time)
+fun Note.toEntity() = NoteEntity(id, title, text, time)

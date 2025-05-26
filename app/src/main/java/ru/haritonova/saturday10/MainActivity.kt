@@ -3,37 +3,45 @@ package ru.haritonova.saturday10
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import ru.haritonova.saturday10.data.db.NotesDatabase
+import ru.haritonova.saturday10.presentation.model.Note
+import ru.haritonova.saturday10.presentation.viewmodel.NotesViewModel
+import ru.haritonova.saturday10.presentation.screen.NoteListScreen
+import androidx.compose.runtime.*
 import ru.haritonova.saturday10.data.NotesRepository
-import ru.haritonova.saturday10.data.api.NotesApi
-import ru.haritonova.saturday10.presentation.model.AuthViewModel
-import ru.haritonova.saturday10.presentation.model.NotesApp
-import ru.haritonova.saturday10.presentation.model.NotesViewModel
+import ru.haritonova.saturday10.presentation.screen.NoteEditScreen
 
 class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
-    val prefs = getSharedPreferences("prefs", MODE_PRIVATE)
-    val savedToken = prefs.getString("token", null)
-
-    val api = Retrofit.Builder()
-      .baseUrl("https://notes-api.bel4.com/api/v1/")
-      .addConverterFactory(GsonConverterFactory.create())
-      .build()
-      .create(NotesApi::class.java)
-
-    val repository = NotesRepository(api, App.db.noteDao())
-    val authViewModel = AuthViewModel(api, prefs)
-    val notesViewModel = NotesViewModel(repository)
-
-    if (savedToken != null) {
-      repository.setToken(savedToken)
-    }
+    val db = NotesDatabase.getDatabase(this)
+    val repository = NotesRepository(db.noteDao())
+    val viewModel = NotesViewModel(repository)
 
     setContent {
-      NotesApp(authViewModel, notesViewModel, repository, isInitiallyLoggedIn = savedToken != null)
+      var screen by remember { mutableStateOf("list") }
+      var editingNote by remember { mutableStateOf<Note?>(null) }
+
+      when (screen) {
+        "list" -> NoteListScreen(
+          viewModel = viewModel,
+          onAddClick = {
+            editingNote = null
+            screen = "edit"
+          },
+          onEditClick = {
+            editingNote = it
+            screen = "edit"
+          }
+        )
+
+        "edit" -> NoteEditScreen(
+          viewModel = viewModel,
+          existingNote = editingNote,
+          onDone = { screen = "list" }
+        )
+      }
     }
   }
 }
