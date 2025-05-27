@@ -50,15 +50,13 @@ fun NoteEditScreen(
                         id = existingNote?.id ?: 0,
                         title = title,
                         text = content,
-                        time = existingNote?.time ?: System.currentTimeMillis()
+                        time = System.currentTimeMillis()
                     )
-
                     if (existingNote == null) {
                         viewModel.addNote(note)
                     } else {
                         viewModel.updateNote(note)
                     }
-
                     onDone()
                 },
                 shape = MaterialTheme.shapes.medium
